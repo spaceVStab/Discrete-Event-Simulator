@@ -16,6 +16,11 @@ def printStatus(machines, jobs):
 def getProcessingTime(MachineID, JobID, PROCESSING_TIME):
     return PROCESSING_TIME[JobID][MachineID]
 
+def calcMetrics(jobs, machines, time, param):
+#     calculate throughput, 
+    totalJobsDone = np.sum(param['JOBS_PROCESSED'])
+    throughput = float(totalJobsDone / time)
+    return throughput
 
 def resetStates(NUM_MACHINES, NUM_JOBS):
     NUM_MACHINES = NUM_MACHINES
@@ -31,7 +36,7 @@ def scheduleJob(jobs, machines, machineID, jobID, time_, RELEASE_ACTION):
     jobs[jobID].getProcessed()
     machines[machineID].processJob(jobID, time_)
     RELEASE_ACTION.append({'MachineId':machineID, 'JobID':jobID, 'EntryTime':machines[machineID].now, \
-                           'ReleaseTime':time_, 'ProcessTime':machines[machineID].processTime})
+                           'ReleaseTime':machines[machineID].jobOverTime, 'ProcessTime':machines[machineID].processTime})
 
 
 def release(jobs, machines, machineID, jobID, time_, JOBS_PROCESSED):
@@ -41,9 +46,11 @@ def release(jobs, machines, machineID, jobID, time_, JOBS_PROCESSED):
     JOBS_PROCESSED[machineID, jobID] = 1
 
 def runAEpisode(param):
+
     machines, jobs = resetStates(param['NUM_MACHINES'], param['NUM_JOBS'])
 
     for time in range(param['SIMULATION_TIME']):
+
         totalJobsDone = np.sum(param['JOBS_PROCESSED'])
         if totalJobsDone == (param['NUM_JOBS'] * param['NUM_MACHINES']):
             print("Simulation Over")
@@ -53,12 +60,16 @@ def runAEpisode(param):
         for i, eM in enumerate(emptyMachines):
             print("For Machine %d"%eM)
             emptyJobs = [i for i in range(param['NUM_JOBS']) if jobs[i].jobBusy is False]
+            jobsDone = machines[eM].jobsDone
+            emptyJobs = list(set(emptyJobs) - set(jobsDone))
+            
             if emptyJobs is None:
                 print("Chill Maar !!")
                 continue
             if np.sum(param['JOBS_PROCESSED'][eM]) == param['NUM_JOBS']:
                 print("Machine {} done enough".format(str(eM)))
                 continue
+
             print(emptyJobs)
             while(True):
                 jobID = int(input("Give jobID for following job available\n"))
@@ -78,7 +89,6 @@ def runAEpisode(param):
                 release(jobs, machines, bM, jobID, time, param['JOBS_PROCESSED'])
 
 def main():
-
     param = {
     'NUM_MACHINES' : 2,
     'NUM_JOBS' : 4,

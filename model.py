@@ -19,7 +19,8 @@ class Machine(object):
         self.machineBusy = False
         self.jobOverTime = 0
         self.now = 0
-    
+        self.jobsDone = []
+
     def processJob(self, jobID, time):
 #         check if machine is busy or not
         if self.machineBusy is False:
@@ -37,6 +38,7 @@ class Machine(object):
     def releaseMachine(self):
 #         check if currently in use
         if self.machineBusy is True:
+            self.jobsDone.append(self.onJob)
             self.machineBusy = False
         else:
             print("Machine was not is use")
