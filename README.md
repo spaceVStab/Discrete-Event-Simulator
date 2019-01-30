@@ -1,2 +1,10 @@
 # Discrete-Event-Simulator
 Discrete Event Simulator for application in Reinforcement Learning
+<br/>
+<br/>
+There are not many simulators which provide event based simulation control. For my B.Tech project based in application of RL in discrete event scheduling a simulator was required. These codes suffices just for the basics required for a proto-type RL model.
+<br/>
+<br/>
+`TODO`
+- Add the ordering criteria condition for the job
+- Add functionality for continuous pool of jobs with fix number of machines
