@@ -2,12 +2,6 @@ import numpy as np
 import os 
 import random 
 
-PROCESSING_TIME = [(3,2),(6,7),(9,4),(4,6)]
-
-def getProcessingTime(MachineID, JobID):
-    # return random.normalvariate(mean, sigma)
-    return PROCESSING_TIME[JobID][MachineID]
-
 """
 Machines are created here
 Whenever you use the machine release it
@@ -21,34 +15,23 @@ class Machine(object):
         self.now = 0
         self.jobsDone = []
 
-    def processJob(self, jobID, time):
-#         check if machine is busy or not
-        if self.machineBusy is False:
-            self.onJob = jobID
-            self.now = time
-            self.processTime = getProcessingTime(self.machineID, jobID)
-            self.jobOverTime = self.now + self.processTime
-            self.machineBusy = True
-            return 
-        else:
-            print("Current Machine busy")
-            self.machineBusy = False
+    def processJob(self, jobID, time, pTime):
+        # check if machine is busy or not
+        assert self.machineBusy == False
+        self.onJob = jobID
+        self.now = time
+        self.processTime = pTime
+        # import pdb; pdb.set_trace()
+        self.jobOverTime = self.now + self.processTime
+        self.machineBusy = True
         return
-    
+
     def releaseMachine(self):
-#         check if currently in use
-        if self.machineBusy is True:
-            self.jobsDone.append(self.onJob)
-            self.machineBusy = False
-        else:
-            print("Machine was not is use")
+        # check if currently in use
+        assert self.machineBusy == True
+        self.jobsDone.append(self.onJob)
+        self.machineBusy = False
         return
-            
-    def syncTime(self, delTime):
-        self.now += delTime
-        return
-
-
 
 """
 Jobs are created here
@@ -62,19 +45,17 @@ class Jobs(object):
         self.processDetails = []
         self.noOfProcess = 0
         self.now = 0
-        
+        self.machineVisited = 0
+
     def getProcessed(self):
-        print("{} requested".format(self.jobName))
+        # print("{} requested".format(self.jobName))
+        assert self.jobBusy == False
         self.jobBusy = True
         return
-    
+
     def releaseJob(self):
-        print("{} released".format(self.jobName))
+        # print("{} released".format(self.jobName))
+        assert self.jobBusy == True
+        self.machineVisited += 1
         self.jobBusy = False
         return
-    
-    def addDetails(self, MId, delTime, startTime):
-        self.noOfProcess += 1
-        self.processDetails.append((MId, delTime, startTime))
-        return
-
